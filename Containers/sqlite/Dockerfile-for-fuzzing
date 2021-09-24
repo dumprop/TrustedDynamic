@@ -6,6 +6,9 @@ LABEL maintainer="a.irkhin@gardatech.ru"
 LABEL version="1.0"
 LABEL description="Докер контейнер для фаззинга sqlite с применением AFL++ на Ubuntu 21.04"
 
+#Загружаем сведения из аргументов
+#ARG SANITIZER #TODO
+
 #запускаем обновление репозитория и устанавливаем с временной зоной tzdata (необходимо для следующих пакетов)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata
 
@@ -49,4 +52,4 @@ RUN mkdir Testcases
 COPY Testcases/ ./Testcases
 
 
-CMD if [ -f "samples.dict" ]; then afl-fuzz -i Testcases/ -o out -T sqlite -x samples.dict -- ./fuzzershell --oom --autovacuum; else afl-fuzz -i Testcases/ -o out -T sqlite -x /afl/AFLplusplus-3.14c/dictionaries/sql.dict -- ./fuzzershell --oom --autovacuum; fi
+CMD if [ -f "samples.dict" ]; then tmux -c "afl-fuzz -i Testcases/ -o out -T sqlite -x samples.dict -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t $TMUX_PANE > tmux-output.txt"; else tmux -c "afl-fuzz -i Testcases/ -o out -T sqlite -x samples.dict -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t $TMUX_PANE > tmux-output.txt"; fi

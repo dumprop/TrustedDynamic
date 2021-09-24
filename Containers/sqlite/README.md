@@ -13,7 +13,7 @@
 * Testcases - [обязательно] директория с входным корпусом данных для фаззинга и анализа покрытия
 * samples.dict - [не обязательно] словарь для фаззинга (если словать будет отсутствовать, то AFL++ будет запущен с обычным SQL словарём из коробки)
 
-## Описание сборки Dockerfile
+## Описание сборки для фаззинга
 
 1. Производится сборка AFL++ (/afl/AFLplusplus-3.14c)
 2. Производится сборка sqlite (/sourcecode)
@@ -29,13 +29,16 @@
 
 Производим сборку Docker контейнера:
 ``` bash
-docker build -f Dockerfile --tag=sqlite .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite .
 ```
 
 Запускаем фаззинг:
 ``` bash
-docker run -ti -v $(pwd)/findings:/fuzzingapp/out sqlite
+docker run -e "AFL_EXIT_ON_TIME=7200" -ti -v $(pwd)/findings:/fuzzingapp/out sqlite
 ```
+
+Параметры запуска:
+* AFL_EXIT_ON_TIME=N - прекращать фаззинг, если новые пути не были найдены в течение N секунд (7200 секунд это 2 часа)
 
 Результаты фаззинга должны сохраниться в локальной директории findings, где был запущен контейнер.
 
