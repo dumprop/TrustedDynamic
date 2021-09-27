@@ -34,6 +34,6 @@ CMD ./fuzzershell --oom --autovacuum -v --unique-cases unique-cases_fuzzershell.
 && cp unique-cases_fuzzershell.txt report-sqlite3/ \
 && cp log-fuzzershell.txt report-sqlite3/ \
 && for F in corpus/*; \
-    do valgrind ./fuzzershell --oom --autovacuum -v $F > /coverageapp/valgrind-logs/$F; \
+    do valgrind --log-file=/coverageapp/valgrind-logs/$F ./fuzzershell --oom --autovacuum -v $F; \
 done && \
-mv /coverageapp/valgrind-logs/ report-sqlite3/
+mv /coverageapp/valgrind-logs/corpus report-sqlite3/
