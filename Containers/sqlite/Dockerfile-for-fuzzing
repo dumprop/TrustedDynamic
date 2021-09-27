@@ -12,15 +12,18 @@ LABEL description="Докер контейнер для фаззинга sqlite 
 #запускаем обновление репозитория и устанавливаем с временной зоной tzdata (необходимо для следующих пакетов)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata
 
-#ставим пакеты для AFL++. На данный момент рекомендуется версия >=11, в репозитории 12я
-RUN apt-get -y install build-essential python3-dev automake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools \ 
-    lld llvm llvm-dev clang  
+#Ставим пакеты для AFL++. На 1й стрчоке настраиваем tzdata (необходимо для следующих пакетов.
+#На 2-4 строчке ставим необходимые пакеты для AFL++ (они описаны в документации). На данный момент рекомендуется версия clang >=11, в репозитории 12я
+#На 5 строчке ставим необходимые пакеты для сборки sqlite
+#На 6 строчке ставим tmux (необходимо для создания скриншота)
+RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata \ 
+    build-essential python3-dev automake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools \ 
+    lld llvm llvm-dev clang  \
+    gcc-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-dev \
+    tcl locales wget \
+    tmux
 
-RUN apt-get -y install gcc-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-dev
-
-#ставим пакеты для sqlite
-RUN apt-get -y install tcl locales wget
-
+#Для корректной работы рекомендуется настроить локализацию
 RUN locale-gen en_US.UTF-8
 
 #ставим AFL++
@@ -29,7 +32,6 @@ RUN wget https://github.com/AFLplusplus/AFLplusplus/archive/refs/tags/3.14c.tar.
     tar -xf 3.14c.tar.gz && \
     cd AFLplusplus-3.14c && \
     make && make install
-    #make ASAN_BUILD=1 && make install рекомендуется компилировать с опцией ASAN_BUILD=1 при сборке для санитайзеров
 
 #настройка переменных окружения
 ENV CC=afl-cc
@@ -45,11 +47,11 @@ RUN git clone https://github.com/sqlite/sqlite && cd sqlite && \
 #сборка фаззинг обёртки для sqlite
 WORKDIR /fuzzingapp
 RUN cp /sourcecode/sqlite/sqlite3.[ch] .; cp /sourcecode/sqlite/tool/fuzzershell.c .
-RUN afl-cc -O3 -o fuzzershell -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_LOAD_EXTENSION=0 -DSQLITE_DEBUG -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE -DSQLITE_OMIT_RANDOMNESS -I. fuzzershell.c sqlite3.c -ldl
+RUN afl-cc -O3 -o fuzzershell -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_LOAD_EXTENSION=0 -DSQLITE_DEBUG -DSQLITE_OMIT_RANDOMNESS -I. fuzzershell.c sqlite3.c -ldl
 
 #передача тестовых образцов в докер контейнер
-RUN mkdir Testcases
-COPY Testcases/ ./Testcases
+RUN mkdir corpus
+COPY corpus/ ./corpus
 
 
-CMD if [ -f "samples.dict" ]; then tmux -c "afl-fuzz -i Testcases/ -o out -T sqlite -x samples.dict -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t $TMUX_PANE > tmux-output.txt"; else tmux -c "afl-fuzz -i Testcases/ -o out -T sqlite -x samples.dict -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t $TMUX_PANE > tmux-output.txt"; fi
+CMD tmux new "export AFL_EXIT_ON_TIME=$(AFL_EXIT_ON_TIME); afl-fuzz -i corpus/ -o out -T sqlite -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t \$TMUX_PANE > out/tmux_output.txt"
