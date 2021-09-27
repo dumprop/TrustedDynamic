@@ -60,4 +60,4 @@ CMD tmux new "export AFL_EXIT_ON_TIME="\$AFL_EXIT_ON_TIME" && \
 afl-fuzz -i corpus/ -o out -T sqlite -- ./fuzzershell --oom --autovacuum && \ 
 tmux capture-pane -J -p -t \$TMUX_PANE > out/tmux_output.txt && \ 
 mkdir out/queue-minimized && \ 
-afl-cmin -i out/default/queue -o out/queue-minimized -- ./fuzzershell --oom --autovacuum "
+afl-cmin -i out/default/queue -o out/queue-minimized -- ./fuzzershell --oom --autovacuum"

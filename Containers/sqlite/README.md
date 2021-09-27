@@ -95,6 +95,10 @@ docker run -ti -v $(pwd)/coverage:/coverageapp/report-sqlite3 sqlite-coverage
 Некоторые константы
 * По умолчанию у `OOM_MAX` (определяет максимальное количество итераций при использовании --oom) стоит значение `625`
 
+## Troubleshooting
+Если не запускается контейнер, то может помочь эта команда 
+`echo core >/proc/sys/kernel/core_pattern`
+
 ## Полезные ссылки 
 
 * https://github.com/AFLplusplus/AFLplusplus - репозиторий AFL++
