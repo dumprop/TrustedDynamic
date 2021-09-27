@@ -56,7 +56,7 @@ RUN mkdir corpus
 COPY corpus/ ./corpus
 
 
-CMD tmux new "export AFL_EXIT_ON_TIME=\$AFL_EXIT_ON_TIME && \ 
+CMD tmux new "export AFL_EXIT_ON_TIME="\$AFL_EXIT_ON_TIME" && \ 
 afl-fuzz -i corpus/ -o out -T sqlite -- ./fuzzershell --oom --autovacuum && \ 
 tmux capture-pane -J -p -t \$TMUX_PANE > out/tmux_output.txt && \ 
 mkdir out/queue-minimized && \ 
