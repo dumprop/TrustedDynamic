@@ -12,8 +12,8 @@ LABEL description="Докер контейнер для фаззинга sqlite 
 #запускаем обновление репозитория и устанавливаем с временной зоной tzdata (необходимо для следующих пакетов)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata
 
-#Ставим пакеты для AFL++. На 1й стрчоке настраиваем tzdata (необходимо для следующих пакетов.
-#На 2-4 строчке ставим необходимые пакеты для AFL++ (они описаны в документации). На данный момент рекомендуется версия clang >=11, в репозитории 12я
+#Ставим пакеты для AFL++. На 1й стрчоке настраиваем tzdata (может быть необходимо для следующих пакетов).
+#На 2-3 строчке ставим необходимые пакеты для AFL++ (они описаны в документации). На данный момент рекомендуется версия clang >=11, в репозитории 12я
 #На 5 строчке ставим необходимые пакеты для сборки sqlite
 #На 6 строчке ставим tmux (необходимо для создания скриншота)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata \ 
@@ -22,6 +22,7 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-ge
     tcl locales wget \
     tmux
 
+#Ставим необходимые пакеты для AFL++ (они описаны в документации)
 RUN apt-get install -y gcc-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-dev
 
 #Для корректной работы рекомендуется настроить локализацию
@@ -55,4 +56,8 @@ RUN mkdir corpus
 COPY corpus/ ./corpus
 
 
-CMD tmux new "export AFL_EXIT_ON_TIME=$(AFL_EXIT_ON_TIME); afl-fuzz -i corpus/ -o out -T sqlite -- ./fuzzershell --oom --autovacuum && tmux capture-pane -J -p -t \$TMUX_PANE > out/tmux_output.txt"
+CMD tmux new "export AFL_EXIT_ON_TIME=$(AFL_EXIT_ON_TIME) && \ 
+afl-fuzz -i corpus/ -o out -T sqlite -- ./fuzzershell --oom --autovacuum && \ 
+tmux capture-pane -J -p -t \$TMUX_PANE > out/tmux_output.txt && \ 
+mkdir out/queue-minimized && \ 
+afl-cmin -i out/default/queue -o out/queue-minimized -- ./fuzzershell --oom --autovacuum "
