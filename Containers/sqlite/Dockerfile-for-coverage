@@ -23,6 +23,8 @@ RUN cp /sourcecode/sqlite/sqlite3.[ch] .; cp /sourcecode/sqlite/tool/fuzzershell
 RUN gcc -g --coverage -O3 -o fuzzershell -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_LOAD_EXTENSION=0 \ 
 -DSQLITE_DEBUG -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE -I. fuzzershell.c sqlite3.c -ldl
 RUN mkdir corpus
+RUN mkdir /coverageapp/valgrind-logs
+RUN mkdir /coverageapp/valgrind-logs/corpus
 #COPY corpus/ ./corpus
 
 
@@ -31,8 +33,7 @@ CMD ./fuzzershell --oom --autovacuum -v --unique-cases unique-cases_fuzzershell.
 && genhtml -o report-sqlite3 sqlite3.info \
 && cp unique-cases_fuzzershell.txt report-sqlite3/ \
 && cp log-fuzzershell.txt report-sqlite3/ \
-&& mkdir /coverageapp/valgrind-logs && mkdir /coverageapp/valgrind-logs/corpus \
 && for F in corpus/*; \
     do valgrind ./fuzzershell --oom --autovacuum -v corpus/$F > /coverageapp/valgrind-logs/$F; \
 done && \
-mv valgrind-logs/ report-sqlite3/
+mv /coverageapp/valgrind-logs/ report-sqlite3/
