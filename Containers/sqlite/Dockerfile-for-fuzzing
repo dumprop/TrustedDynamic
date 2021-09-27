@@ -19,9 +19,10 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-ge
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata \ 
     build-essential python3-dev automake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools \ 
     lld llvm llvm-dev clang  \
-    gcc-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-dev \
     tcl locales wget \
     tmux
+
+RUN apt-get install -y gcc-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/.* //'|sed 's/\..*//')-dev
 
 #Для корректной работы рекомендуется настроить локализацию
 RUN locale-gen en_US.UTF-8
