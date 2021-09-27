@@ -34,4 +34,5 @@ CMD ./fuzzershell --oom --autovacuum -v --unique-cases unique-cases_fuzzershell.
 && mkdir valgrind-logs \
 && for F in corpus/*; \
     do valgrind ./fuzzershell --oom --autovacuum -v corpus/* > valgrind-logs/$F; \
-done
+done && \
+mv valgrind-logs/ report-sqlite3/
