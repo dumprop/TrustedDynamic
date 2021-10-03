@@ -21,7 +21,7 @@ RUN git clone https://github.com/sqlite/sqlite && cd sqlite && \
 WORKDIR /coverageapp
 RUN cp /sourcecode/sqlite/sqlite3.[ch] .; cp /sourcecode/sqlite/tool/fuzzershell.c .
 RUN gcc -g --coverage -O3 -o fuzzershell -DSQLITE_THREADSAFE=0 -DSQLITE_ENABLE_LOAD_EXTENSION=0 \ 
--DSQLITE_DEBUG -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_RTREE -I. fuzzershell.c sqlite3.c -ldl
+-DSQLITE_DEBUG -I. fuzzershell.c sqlite3.c -ldl
 RUN mkdir /coverageapp/corpus
 RUN mkdir /coverageapp/valgrind-logs
 #COPY corpus/ ./corpus
