@@ -34,12 +34,12 @@ docker build -f Dockerfile-for-fuzzing --tag=sqlite --no-cache .
 
 Производим сборку Docker контейнера с применением ASAN+UBSAN+CFISAN санитайзеров:
 ``` bash
-docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_ASAN --build-arg SANITIZER2=AFL_USE_UBSAN --build-arg SANITIZER3=AFL_USE_CFISAN --no-cache .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_ASAN --build-arg SANITIZER2=AFL_USE_UBSAN --no-cache .
 ```
 
 Производим сборку Docker контейнера с применением MSAN+UBSAN+CFISAN санитайзеров:
 ``` bash
-docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_MSAN --build-arg SANITIZER2=AFL_USE_UBSAN --build-arg SANITIZER3=AFL_USE_CFISAN --no-cache .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_MSAN --build-arg SANITIZER2=AFL_USE_UBSAN --no-cache .
 ```
 
 ## Запуск фаззинга

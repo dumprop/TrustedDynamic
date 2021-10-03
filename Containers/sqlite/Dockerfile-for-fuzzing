@@ -15,12 +15,11 @@ ENV $SANITIZER2=1
 #запускаем обновление репозитория и устанавливаем с временной зоной tzdata (необходимо для следующих пакетов)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata
 
-#Ставим пакеты для AFL++. На 1й стрчоке настраиваем tzdata (может быть необходимо для следующих пакетов).
-#На 2-3 строчке ставим необходимые пакеты для AFL++ (они описаны в документации). На данный момент рекомендуется версия clang >=11, в репозитории 12я
-#На 5 строчке ставим необходимые пакеты для сборки sqlite
-#На 6 строчке ставим tmux (необходимо для создания скриншота)
-RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata \ 
-    build-essential python3-dev automake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools \ 
+#Ставим пакеты для AFL++.
+#На 1-2 строчке ставим необходимые пакеты для AFL++ (они описаны в документации). На данный момент рекомендуется версия clang >=11, в репозитории 12я
+#На 3 строчке ставим необходимые пакеты для сборки sqlite
+#На 4 строчке ставим tmux (необходимо для создания скриншота)
+RUN apt-get update && apt-get install -y --fix-missing build-essential python3-dev automake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools \ 
     lld llvm llvm-dev clang  \
     tcl locales wget \
     tmux
