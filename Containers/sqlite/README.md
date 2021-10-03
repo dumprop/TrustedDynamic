@@ -29,7 +29,7 @@
 
 Производим сборку Docker контейнера без санитайзеров:
 ``` bash
-docker build -f Dockerfile-for-fuzzing --tag=sqlite --no-cache .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite SANITIZER1=NO --build-arg SANITIZER2=NO --no-cache .
 ```
 
 Производим сборку Docker контейнера с применением ASAN+UBSAN+CFISAN санитайзеров:
