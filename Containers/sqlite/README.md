@@ -25,14 +25,25 @@
    * /fuzzingapp/out - результаты работы AFL
 
 
-## Запуск фаззинга
+## Сборка контейнера
 
-Производим сборку Docker контейнера:
+Производим сборку Docker контейнера без санитайзеров:
 ``` bash
-docker build -f Dockerfile-for-fuzzing --tag=sqlite .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --no-cache .
 ```
 
-Запускаем фаззинг:
+Производим сборку Docker контейнера с применением ASAN+UBSAN+CFISAN санитайзеров:
+``` bash
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_ASAN --build-arg SANITIZER2=AFL_USE_UBSAN --build-arg SANITIZER3=AFL_USE_CFISAN --no-cache .
+```
+
+Производим сборку Docker контейнера с применением MSAN+UBSAN+CFISAN санитайзеров:
+``` bash
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=AFL_USE_MSAN --build-arg SANITIZER2=AFL_USE_UBSAN --build-arg SANITIZER3=AFL_USE_CFISAN --no-cache .
+```
+
+## Запуск фаззинга
+Запускаем фаззинг тестирование:
 ``` bash
 docker run -e "AFL_EXIT_ON_TIME=7200" -ti -v $(pwd)/findings:/fuzzingapp/out sqlite
 ```

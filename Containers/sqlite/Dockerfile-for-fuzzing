@@ -7,7 +7,12 @@ LABEL version="1.0"
 LABEL description="Докер контейнер для фаззинга sqlite с применением AFL++ на Ubuntu 21.04"
 
 #Загружаем сведения из аргументов
-#ARG SANITIZER #TODO
+ARG SANITIZER1
+ARG SANITIZER2
+ARG SANITIZER3
+ENV $SANITIZER1=1
+ENV $SANITIZER2=1
+ENV $SANITIZER3=1
 
 #запускаем обновление репозитория и устанавливаем с временной зоной tzdata (необходимо для следующих пакетов)
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="Russia/Moscow" apt-get install -y tzdata
