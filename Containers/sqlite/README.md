@@ -24,12 +24,20 @@
    * /fuzzingapp/corpus - директория с входным корпусом данных для фаззинга
    * /fuzzingapp/out - результаты работы AFL
 
+## Описание сборки для анализа покрытия
+
+1. Производится сборка sqlite (/sourcecode)
+2. Производится сборка модуля fuzzershell, реализующий цель для фаззинга (/coverageapp)
+3. Передача корупса (папки corpus) для анализа покрытия
+   * /sourcecode/sqlite - исходники и собранный код sqlite
+   * /coverageapp - собранный sqlite и его модуль fuzzershell
+   * /coverageapp/report-sqlite3 - отчёт lcov об покрытии
 
 ## Сборка контейнера
 
 Производим сборку Docker контейнера без санитайзеров:
 ``` bash
-docker build -f Dockerfile-for-fuzzing --tag=sqlite SANITIZER1=NO --build-arg SANITIZER2=NO --no-cache .
+docker build -f Dockerfile-for-fuzzing --tag=sqlite --build-arg SANITIZER1=NO --build-arg SANITIZER2=NO --no-cache .
 ```
 
 Производим сборку Docker контейнера с применением ASAN+UBSAN+CFISAN санитайзеров:
